@@ -43,14 +43,15 @@ const GRAPHQL_REPOS_QUERY = `
 `;
 
 const GRAPHQL_STATS_QUERY = `
-  query userInfo($login: String!, $after: String, $includeMergedPullRequests: Boolean!, $includeDiscussions: Boolean!, $includeDiscussionsAnswers: Boolean!, $startTime: DateTime = null, $includePrivate: Boolean!, $ownerAffiliations: [RepositoryAffiliation!]!) {
+  query userInfo($login: String!, $after: String, $includeMergedPullRequests: Boolean!, $includeDiscussions: Boolean!, $includeDiscussionsAnswers: Boolean!, $startTime: DateTime = null, $ownerAffiliations: [RepositoryAffiliation!]!) {
     user(login: $login) {
       name
       login
-      commits: contributionsCollection (from: $startTime, includePrivateContributions: $includePrivate) {
+      commits: contributionsCollection (from: $startTime) {
         totalCommitContributions,
+        restrictedContributionsCount
       }
-      reviews: contributionsCollection (includePrivateContributions: $includePrivate) {
+      reviews: contributionsCollection {
         totalPullRequestReviewContributions
       }
       repositoriesContributedTo(first: 1, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]) {
@@ -299,6 +300,10 @@ const fetchStats = async (
     stats.totalCommits = await totalCommitsFetcher(username);
   } else {
     stats.totalCommits = user.commits.totalCommitContributions;
+    // Add private contributions if requested
+    if (count_private && user.commits.restrictedContributionsCount) {
+      stats.totalCommits += user.commits.restrictedContributionsCount;
+    }
   }
 
   stats.totalPRs = user.pullRequests.totalCount;
