@@ -85,7 +85,10 @@ export default async (req, res) => {
   }
 
   try {
-    const stats = await fetchWakatimeStats({ username: targetUsername, api_domain });
+    const stats = await fetchWakatimeStats({
+      username: targetUsername,
+      api_domain,
+    });
 
     let cacheSeconds = clampValue(
       parseInt(cache_seconds || CONSTANTS.CARD_CACHE_SECONDS, 10),

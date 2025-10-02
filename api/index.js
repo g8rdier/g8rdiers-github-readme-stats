@@ -112,8 +112,7 @@ export default async (req, res) => {
     const showStats = parseArray(show);
     const includeAllCommitsInput =
       include_all_commits ?? process.env.DEFAULT_INCLUDE_ALL_COMMITS;
-    const includeAllCommits =
-      parseBoolean(includeAllCommitsInput) ?? false;
+    const includeAllCommits = parseBoolean(includeAllCommitsInput) ?? false;
     const countPrivateInput =
       count_private ?? process.env.DEFAULT_COUNT_PRIVATE;
     const shouldCountPrivate = parseBoolean(countPrivateInput) ?? false;
